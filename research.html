@@ -1,0 +1,381 @@
+
+<h1 style="text-align: center">Improving Language Model Generalization with Small-Scale Adversarial Data Sets</h1>
+<h2 style="text-align: center">Stan Ivaciov</h2>
+<h3 style="text-align: center">2024</h3>
+
+<section id="abstract">
+    <h2>Abstract</h2>
+    <p>Adversarial examples are an essential tool for evaluating and improving the robustness of natural language inference (NLI) models. Despite achieving high accuracy on benchmark datasets, pre-trained models such as ELECTRA-small often rely on superficial lexical and syntactic patterns, leading to failures in nuanced scenarios. This study systematically generates adversarial datasets for the Stanford Natural Language Inference (SNLI) task, employing techniques such as paraphrasing, synonyms/antonyms, structural changes, and negations to expose weaknesses in model reasoning. Adversarial examples were curated to challenge the model’s ability to discern subtle contradictions, nuanced entailments, and implied relationships while maintaining logical plausibility. Evaluation of ELECTRA-small on these datasets revealed significant vulnerabilities, with accuracy dropping from 89.5% on standard SNLI test data to 55.0% on adversarial examples. Fine-tuning the model with a curated adversarial training set improved its performance on challenging examples by 20%, demonstrating the potential of adversarial training to enhance model robustness. Our findings highlight critical areas for improvement, including semantic overlap bias, limited contextual reasoning, and sensitivity to nuanced linguistic variations. By leveraging adversarial datasets, this work provides actionable insights into model shortcomings and suggests strategies for building more robust NLI systems, including targeted data augmentation and contextual reasoning tasks.</p>
+</section>
+
+<section id="introduction">
+    <h2>1. Introduction</h2>
+    <p>
+        Adversarial examples play a critical role in evaluating and improving the robustness of NLI models. Despite achieving high accuracy on standard datasets, many models rely on superficial patterns and fail to generalize to nuanced scenarios. This study focuses on generating and utilizing adversarial examples to expose and address the weaknesses of pre-trained models, particularly ELECTRA-small, on the SNLI task.
+    </p>
+    <p>
+        The generation of adversarial examples involves systematic modifications to the original premise, hypothesis, or both. Techniques such as replacing words with synonyms or antonyms, paraphrasing, altering sentence structure, and introducing negations are employed to challenge model understanding. For instance, subtle contradictions, indirect entailments, or expanded contexts are crafted to confuse the model while maintaining logical plausibility. These techniques, applied independently and in combination, reduced model accuracy from 89.5% to as low as 55%, demonstrating the effectiveness of adversarial datasets in highlighting model vulnerabilities.
+    </p>
+    <p>
+        Two adversarial datasets, each comprising 100 examples, were curated for this study. The first dataset evaluates the model's performance, while the second is used for fine-tuning. Both datasets were generated iteratively using the ChatGPT 40 mini model to introduce layered complexities, including nuanced contradictions, ambiguous scenarios, and expanded contexts, to test the model’s ability to discern subtle relationships. For example, for the original premise, chosen from the SNLI test set, "A young child is enjoying the water and rock scenery with their dog," the adversarial hypothesis, "The child and their dog stare at the horizon from a dry desert far away from water," introduces contradictions that are harder to classify correctly.
+    </p>
+    <p>
+        Results indicate that ELECTRA-small struggles with intricate contradictions and nuanced entailments but performs well on straightforward examples. Fine-tuning with adversarial training data improved the model's accuracy on challenging examples from 66.0% to 75%, highlighting the potential of adversarial training to enhance robustness.
+    </p>
+</section>
+
+<section id="model-and-dataset">
+    <h2>2. Model and the Dataset</h2>
+
+    <h3>2.1 The Model</h3>
+    <p>
+        This study employs the ELECTRA-small model (Clark et al., 2020), a transformer-based architecture that excels in efficiency and performance on natural language understanding tasks. Unlike traditional masked language models, ELECTRA is pre-trained using a replaced token detection task, where the model learns to distinguish real tokens from tokens replaced by a generator network. This approach achieves competitive results with fewer parameters and training resources.
+    </p>
+    <p>
+        The ELECTRA-small variant, with approximately 14M parameters, strikes a balance between computational efficiency and predictive performance, making it an ideal candidate for adversarial testing and fine-tuning experiments. The model was initially pre-trained on the SNLI dataset (Bowman et al., 2015), a benchmark corpus for natural language inference tasks. SNLI consists of premise-hypothesis pairs labeled as entailment, neutral, or contradiction. While the pre-trained ELECTRA-small achieves high accuracy on the standard SNLI test set (89.5%), its susceptibility to adversarial examples highlights the need for robustness-focused training.
+    </p>
+
+    <h3>2.2 The Dataset</h3>
+    <p>
+        The SNLI dataset contains 549,367 premise-hypothesis pairs derived from image captions. Each example is labeled with one of three classes:
+    </p>
+    <ul>
+        <li><strong>Entailment:</strong> The hypothesis logically follows from the premise.</li>
+        <li><strong>Neutral:</strong> The hypothesis is plausible but not guaranteed by the premise.</li>
+        <li><strong>Contradiction:</strong> The hypothesis conflicts with the premise.</li>
+    </ul>
+    <p>
+        SNLI serves as a comprehensive benchmark for evaluating the reasoning capabilities of NLI models (Bowman et al., 2015).
+    </p>
+
+    <h3>2.3 Identifying Model Shortcomings</h3>
+    <p>
+        Evaluating the performance of the ELECTRA-small model on adversarial examples revealed key insights into its limitations in handling nuanced and complex language scenarios. The adversarial datasets were designed to exploit specific weaknesses in the model's reasoning capabilities by introducing subtle semantic shifts, indirect relationships, and contextual ambiguity. This section outlines the process of identifying and categorizing model errors and highlights recurring patterns that informed the iterative refinement of adversarial examples.
+    </p>
+
+    <h3>2.4 Categories of Model Errors</h3>
+    <ul>
+        <li>
+            <strong>Subtle Contradictions:</strong>
+            The model often struggled with hypotheses that contradicted the premise in nuanced ways. For example, shifting an action from water-based to land-based while maintaining other contextual similarities led to incorrect classifications as neutral rather than contradiction.
+        </li>
+        <li>
+            <strong>Ambiguous Scenarios:</strong>
+            Scenarios that could be interpreted differently depending on implicit assumptions or missing context frequently resulted in errors. For instance, adding elaborate details to a hypothesis, such as indirect motivations or environmental changes, confused the model’s classification.
+        </li>
+        <li>
+            <strong>Negation Handling:</strong>
+            Introducing negations, especially in multi-clause sentences, posed challenges for the model. Negated clauses were sometimes overlooked or misinterpreted, leading to incorrect entailment or contradiction labels.
+        </li>
+        <li>
+            <strong>Expanded Contexts:</strong>
+            Hypotheses that extended the context beyond the premise, such as adding unrelated or tangential details, occasionally led to misclassifications as neutral due to the model's inability to prioritize relevant information.
+        </li>
+    </ul>
+
+    <h3>2.5 Error Analysis</h3>
+    <p>
+        To systematically identify errors, the following steps were performed:
+    </p>
+    <ul>
+        <li><strong>Prediction-Label Comparison:</strong> Each adversarial example was evaluated to identify mismatches between the model's predictions and the ground-truth labels.</li>
+        <li><strong>Error Heatmaps:</strong> Prediction probabilities for the classes (entailment, neutral, contradiction) were visualized to detect patterns in confidence levels for incorrect classifications.</li>
+        <li><strong>Iterative Refinement:</strong> Adversarial examples were modified iteratively to increase their complexity and subtlety. This process involved introducing additional layers of contradiction, entailment, or contextual ambiguity until the model consistently failed.</li>
+    </ul>
+
+    <table>
+        <caption>Table 1. Adversarial Examples</caption>
+        <thead>
+        <tr>
+            <th>Adversarial Premise</th>
+            <th>Adversarial Hypothesis</th>
+            <th>Adversarial Label</th>
+            <th>Model Prediction</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>A child and their dog stand by the water, staring at the distant horizon, enjoying the beauty of nature.</td>
+            <td>The child and their dog stare at the horizon from a dry desert far away from water, marveling at the sand dunes.</td>
+            <td>Contradiction</td>
+            <td>Neutral</td>
+        </tr>
+        <tr>
+            <td>Amidst the rugged terrain of rocks and flowing water, a young child and their dog are both soaked from splashing around.</td>
+            <td>The child carefully avoids the water, ensuring their dog stays dry while exploring the rocky trails.</td>
+            <td>Contradiction</td>
+            <td>Neutral</td>
+        </tr>
+        <tr>
+            <td>A young child is enjoying the scenic view of water and rocks alongside their dog, who is barking excitedly.</td>
+            <td>The child is enjoying the scenery, while their dog remains calm and silent, lying peacefully on the rocks.</td>
+            <td>Neutral</td>
+            <td>Contradiction</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+
+<section id="observations-and-insights">
+    <h3>2.6 Observations and Insights</h3>
+    <p>Analysis of the model's errors revealed several key insights:</p>
+    <ul>
+        <li><strong>Semantic Overlap Bias:</strong> The model exhibited a bias toward predicting entailment or neutral when there was significant lexical overlap between the premise and hypothesis, even when the logical relationship dictated contradiction.</li>
+        <li><strong>Underdeveloped Logical Reasoning:</strong> Scenarios requiring multi-step reasoning or interpretation of implied relationships often led to misclassifications.</li>
+        <li><strong>Sensitivity to Syntax:</strong> Structural changes, such as altering active voice to passive voice, caused the model to incorrectly classify semantically identical pairs.</li>
+    </ul>
+</section>
+
+<section id="example-analysis">
+    <h3>2.7 Example Analysis and Observations</h3>
+    <p>Analyzing results in Table 1, we can derive concrete explanations for why the ELECTRA-small model failed to classify the given adversarial examples correctly. The examples were generated from the original premise: <em>“A young child is enjoying the water and rock scenery with their dog.”</em> and the original hypothesis: <em>“The child and dog are enjoying some fresh air.”</em></p>
+
+    <div>
+        <h4>Example 1</h4>
+        <p>The model likely struggles with recognizing nuanced contradictions that involve a shift in environmental context (water vs. desert). While the hypothesis explicitly contradicts the premise by situating the action in a desert instead of near water, this contradiction is not immediately apparent through lexical overlap or syntactic cues. ELECTRA-small might be over-relying on superficial lexical similarities (<em>"stare at the horizon"</em>) and failing to connect the logical conflict in the settings (water vs. desert).</p>
+    </div>
+
+    <div>
+        <h4>Example 2</h4>
+        <p>This example includes a contradiction in actions (<em>child and dog being "soaked"</em> vs. <em>"staying dry"</em>), but both premise and hypothesis are set in the same general environment (<em>"rugged terrain of rocks"</em>). The model may have failed to recognize the semantic opposition in <em>"soaked"</em> and <em>"staying dry"</em> due to insufficient training on nuanced behavioral contradictions. It likely focuses on the shared setting and overlooks the more critical contradiction embedded in the details of actions.</p>
+    </div>
+
+    <div>
+        <h4>Example 3</h4>
+        <p>The model misclassified this example as contradiction because of the contrasting descriptions of the dog's behavior (<em>"barking excitedly"</em> vs. <em>"calm and silent"</em>). While the change in behavior does not create a full contradiction between premise and hypothesis, the model likely overemphasized this behavioral change. ELECTRA-small might lack the nuanced understanding to recognize that differences in peripheral details (like a dog's behavior) do not negate the core semantic alignment (<em>"child enjoying the scenery"</em>).</p>
+    </div>
+</section>
+
+<section id="observations-summary">
+    <h3>Observations</h3>
+    <ul>
+        <li><strong>Over-reliance on Lexical Patterns:</strong> The model may focus too heavily on lexical overlap between premise and hypothesis without fully understanding context shifts or nuanced contradictions.</li>
+        <li><strong>Weakness in Contextual Reasoning:</strong> Subtle changes in environment or behavior (e.g., <em>"water"</em> vs. <em>"desert"</em> or <em>"soaked"</em> vs. <em>"dry"</em>) may go unnoticed due to the model's limited ability to reason about implicit logical conflicts.</li>
+        <li><strong>Behavioral and Emotional Cues:</strong> Changes in descriptions of behaviors or emotional states (e.g., <em>"barking"</em> vs. <em>"calm"</em>) can confuse the model, leading to incorrect classifications, as these details are not core indicators of entailment or contradiction.</li>
+        <li><strong>Semantic Overlap Bias:</strong> The model may disproportionately weigh shared contexts or surface-level similarities, leading to misclassification of subtle contradictions or entailments.</li>
+    </ul>
+</section>
+
+<section id="model-improvement">
+    <h3>2.8 Implications for Model Improvement</h3>
+    <p>The observed patterns informed the development of the adversarial training dataset. By incorporating examples that emphasized nuanced contradictions, subtle entailments, and ambiguous contexts, the adversarial training set aimed to challenge the model's ability to generalize and reason effectively. This strategy intended to mitigate the identified weaknesses and improve robustness against similar patterns in the test set.</p>
+    <p>By systematically identifying and addressing these errors, the fine-tuned ELECTRA-small model demonstrated improved accuracy on the adversarial test set, suggesting a stronger ability to handle complex and nuanced language relationships.</p>
+</section>
+
+
+<section id="generating-adversarial-dataset">
+    <h3>3. Generating Adversarial Dataset</h3>
+    <p>
+        There are several known techniques to create adversarial test sets. In the context of SNLI, the main techniques include modifying the premise, the hypothesis, or both to expose model weaknesses:
+    </p>
+    <ul>
+        <li>
+            <strong>Synonyms and Antonyms:</strong>
+            Replacing words with their synonyms or antonyms is an effective way to challenge lexical inference capabilities. For instance, (Glockner et al., 2018) demonstrated how NLI systems struggle with lexical inferences involving simple substitutions of synonyms or antonyms, revealing deficiencies in their lexical knowledge.
+        </li>
+        <li>
+            <strong>Paraphrasing:</strong>
+            Generating semantically equivalent sentences with varied phrasing can help assess model robustness. (Iyyer et al., 2018) introduced syntactically controlled paraphrase networks to generate adversarial examples, showing how paraphrasing can confuse models without altering the underlying semantics.
+        </li>
+        <li>
+            <strong>Structural Changes:</strong>
+            Modifying sentence structures, such as transforming active voice to passive voice, can challenge syntactic heuristics. McCoy et al. (2019) explored how NLI systems often rely on spurious syntactic patterns, constructing adversarial examples that exploit these weaknesses.
+        </li>
+        <li>
+            <strong>Negations:</strong>
+            Adding negations to sentences tests the model's ability to handle logical operators and understand context. (Naik et al., 2018) created stress tests involving negations and other linguistic phenomena, identifying significant gaps in NLI models' robustness.
+        </li>
+    </ul>
+    <p>
+        Experimenting with the aforementioned techniques independently and in conjunction with each other produced a variation of model accuracy from low 80% to low 50%.
+    </p>
+    <p>
+        To make the examples more challenging for the model, ChatGPT was instructed to generate adversarial examples by introducing nuanced structural changes, subtle contradictions, or indirectly implied relationships that are harder for the model to classify correctly.
+    </p>
+    <div>
+        <h4>Example:</h4>
+        <p>
+            Based on the original premise: <em>"A young child is enjoying the water and rock scenery with their dog."</em>, original hypothesis: <em>"The child and dog are enjoying some fresh air."</em>, and original label: <strong>0 – entailment</strong>, adversarial examples in Figure 1 were generated.
+        </p>
+        <p>
+            To achieve lower accuracy (below 60% for the training set and below 70% for the test set), all adversarial examples were modified and re-validated multiple times. Enhancements specifically include the following:
+        </p>
+        <ul>
+            <li><strong>Subtle Contradictions:</strong> Slightly alter the actions or states in the hypothesis to directly contradict the premise in a nuanced way (e.g., water-based actions become land-based).</li>
+            <li><strong>Nuanced Entailments:</strong> Make the hypothesis entail the premise indirectly or via less obvious shared semantics.</li>
+            <li><strong>Ambiguous Scenarios:</strong> Introduce scenarios that could be interpreted differently depending on context (e.g., changes in behavior or intention).</li>
+            <li><strong>Expanded Contexts:</strong> Add more elaborate or conflicting settings to the hypothesis to confuse the classifier.</li>
+        </ul>
+    </div>
+    <p>
+        Sometimes that was not enough to confuse the ELECTRA-small model, and examples had to be further refined to introduce more layers of subtlety in narrative and visual imagery while still maintaining logical plausibility, making it even harder for the model to classify correctly.
+    </p>
+    <p>
+        Two adversarial datasets, 100 examples each, were created incorporating the previously described techniques and running up to 10 iterations through ChatGPT per example, adjusting each example’s complexity and subtlety. The first adversarial dataset is used to test model performance, and the second is used to fine-tune the ELECTRA-small model, which was pre-trained on the SNLI natural language inference dataset.
+    </p>
+    <p>
+        Each dataset was generated from 20 samples randomly selected from the original SNLI Test dataset. We mostly focused on generating adversarial examples for contradiction because previous analysis strongly suggested that the model struggles the most in this area.
+    </p>
+</section>
+
+
+
+<section id="fine-tuning-analysis">
+    <h3>4. Fine Tuning and Result Analysis</h3>
+    <p>
+        The original SNLI dataset was reimagined and enhanced with 100 adversarial training examples, forming a verdant crucible for model fine-tuning. The ELECTRA-small model was retrained with this intricate mosaic of data, intertwining adversarial and original datasets, and subsequently tested on the original SNLI Test, Adversarial Training, and Adversarial Test datasets. This captivating approach resonates with methodologies explored by (Liu et al., 2019), (Sanwal, 2024), and (Achard, 2024).
+    </p>
+
+    <table>
+        <caption>Table 2. Pre-Trained vs. Fine-Tuned Results</caption>
+        <thead>
+        <tr>
+            <th>Data Set</th>
+            <th>Pre-Trained ELECTRA-small</th>
+            <th>Fine-Tuned ELECTRA-small</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>SNLI Test Set</td>
+            <td>89.5</td>
+            <td>89.7</td>
+        </tr>
+        <tr>
+            <td>Adversary Train Set</td>
+            <td>55.0</td>
+            <td>74.0</td>
+        </tr>
+        <tr>
+            <td>Adversary Test Set</td>
+            <td>66.0</td>
+            <td>75.0</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>
+        There was insignificant improvement in the base test set accuracy, most likely because it does not contain many of examples similar to our adversarial sets, which was highlighted by our earlier analysis.
+    </p>
+
+    <div>
+        <p>Below error heatmaps highlight the accuracy difference between original ELECTRA-small and Fine-Tuned ELECTRA-small models.</p>
+        <figure>
+            <img src="original-model-heatmap.png" alt="Heatmap for Original Model" style="width:100%; max-width:600px;">
+            <figcaption>Figure 1. Original Model</figcaption>
+        </figure>
+        <figure>
+            <img src="fine-tuned-model-heatmap.png" alt="Heatmap for Fine-Tuned Model" style="width:100%; max-width:600px;">
+            <figcaption>Figure 2. Fine-Tuned Model</figcaption>
+        </figure>
+    </div>
+</section>
+
+<section id="misclassified-examples">
+    <h3>Analysis of Misclassified Examples</h3>
+    <p>
+        The model, as expected, learned to better classify contradictions. However, there was a slight degradation in the entailment and neutral classifications, which we explore through two representative examples below. Despite improvements, contradictions in adversarial examples remain challenging for the model to classify correctly. This highlights the need for further enhancements in adversarial techniques.
+    </p>
+
+    <h4>Example 1</h4>
+    <p>
+        <strong>Premise:</strong> "A man sits cross-legged in a room adorned with Asian-style decorations and intricate patterns on the walls."
+        <br>
+        <strong>Hypothesis:</strong> "A man sits quietly, meditating on the polished wooden floor of the same room."
+        <br>
+        <strong>Label:</strong> 1 - Neutral
+        <br>
+        <strong>Predicted Label:</strong> 2 - Contradiction
+    </p>
+    <p>
+        Both sentences describe the same man and room, with the hypothesis elaborating slightly. The model predicts contradiction, likely overemphasizing the additional detail in the hypothesis (<em>"meditating on the polished wooden floor"</em>) as conflicting. The model might be overly sensitive to minor surface-level changes and lacks the ability to contextualize elaborations or refinements.
+    </p>
+
+    <h4>Example 2</h4>
+    <p>
+        <strong>Premise:</strong> "A man stands next to an overflowing garbage bin on the side of a busy street."
+        <br>
+        <strong>Hypothesis:</strong> "The man kneels on the ground, picking up garbage that has spilled from the bin."
+        <br>
+        <strong>Label:</strong> 1 - Neutral
+        <br>
+        <strong>Predicted Label:</strong> 2 - Contradiction
+    </p>
+    <p>
+        The hypothesis elaborates on an action implied by the premise but does not directly contradict it. The model misclassifies this neutral extension as a contradiction, likely due to its inability to parse inferred or implied actions as complementary rather than conflicting. The model struggles with scenarios that require recognizing implicitly neutral or related actions.
+    </p>
+    <p>In both examples, the model fails to consider the semantic relationship between the premise and hypothesis: in Example 1 the hypothesis does not contradict but rather refines the premise. And in example 2 the hypothesis describes an action consistent with the premise (cleaning up garbage from an overflowing bin).</p>
+    <p>This suggests a gap in reasoning capabilities when dealing with nuanced actions or elaborations. The model seems biased toward predicting contradiction when faced with detailed, contextually complex hypotheses. If contradictions are over-represented in training data, the model might lean toward predicting contradictions resulting in class imbalances. In addition, the adversarial fine-tuning process may have introduced (by design) adversarial examples emphasizing contradictions, biasing the model toward overpredicting this class.</p>
+</section>
+<section id="model-improvement-discussion">
+    <h3>5. Further Model Improvement Techniques Discussion</h3>
+    <p>
+        Improving the performance of models like ELECTRA-small on natural language inference (NLI) tasks requires targeted interventions addressing the identified shortcomings. There are several documented approaches to further enhancing model accuracy and generalization. We briefly discuss a non-exhaustive list of such techniques that could be utilized in future research.
+    </p>
+
+    <h4>5.1 Expand Training Data with Neutral Elaborations</h4>
+    <p>
+        To better model nuanced entailments and neutral scenarios, it is critical to augment training data with hypotheses that provide non-conflicting elaborations or inferred actions. For instance, adding examples like “meditating on a polished wooden floor” should explicitly reinforce neutrality when paired with consistent premises. Prior work has demonstrated that curated data augmentation can significantly improve robustness in NLI tasks (Min et al., 2020).
+    </p>
+
+    <h4>5.2 Adversarial Training with Ambiguity Training Data</h4>
+    <p>
+        Adversarial training has proven effective in improving model robustness by exposing and addressing specific weaknesses (Jia and Liang, 2017). Incorporating adversarial examples that introduce subtle elaborations, nuanced contradictions, or implied relationships will enable the model to better distinguish between genuine contradictions and expanded contexts. These examples should emphasize scenarios where logical relationships are indirectly expressed, challenging the model to reason beyond surface-level features.
+    </p>
+
+    <h4>5.3 Introduce Contextual Reasoning Tasks</h4>
+    <p>
+        NLI models often falter on tasks requiring multi-hop reasoning or contextual understanding (Yang et al., 2018). To mitigate this limitation, incorporating datasets designed for contextual reasoning, such as MultiRC (Khashabi et al., 2018) or specialized multi-hop datasets, can enhance the model’s ability to discern relationships in complex scenarios. These tasks help train the model to integrate information across multiple statements or sentences, bridging gaps in its contextual inference capabilities.
+    </p>
+</section>
+
+
+<section id="references">
+    <h3>References</h3>
+    <ol>
+        <li>
+            Achard, C. (2024). Teaching a Language Model to Distinguish Between Similar Details Using a Small Adversarial Training Set. <em>Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL 2024)</em>, 123–130. Toronto, Canada. Association for Computational Linguistics.
+        </li>
+        <li>
+            Bowman, S. R., Angeli, G., Potts, C., & Manning, C. D. (2015). A Large Annotated Corpus for Learning Natural Language Inference. <em>Proceedings of the 2015 Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, 632–642.
+        </li>
+        <li>
+            Clark, K., Luong, M. T., Le, Q. V., & Manning, C. D. (2020). ELECTRA: Pre-training Text Encoders as Discriminators Rather Than Generators. <em>Proceedings of the International Conference on Learning Representations (ICLR)</em>.
+        </li>
+        <li>
+            Glockner, M., Shwartz, V., & Goldberg, Y. (2018). Breaking NLI Systems with Sentences That Require Simple Lexical Inferences. <em>Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)</em>, 650–655.
+        </li>
+        <li>
+            Iyyer, M., Wieting, J., Gimpel, K., & Zettlemoyer, L. (2018). Adversarial Example Generation with Syntactically Controlled Paraphrase Networks. <em>Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</em>, 1875–1885.
+        </li>
+        <li>
+            Jia, R., & Liang, P. (2017). Adversarial Examples for Evaluating Reading Comprehension Systems. <em>Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, 2021–2031.
+        </li>
+        <li>
+            Khashabi, D., Min, S., Seymore, A., Khot, T., Sabharwal, A., Tafjord, O., Clark, P., & Hajishirzi, H. (2018). Looking Beyond the Surface: A Challenge Set for Reading Comprehension Over Multiple Sentences. <em>Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)</em>, 252–262.
+        </li>
+        <li>
+            McCoy, T., Pavlick, E., & Linzen, T. (2019). Right for the Wrong Reasons: Diagnosing Syntactic Heuristics in Natural Language Inference. <em>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics (ACL)</em>, 3428–3448.
+        </li>
+        <li>
+            Min, S., Wallace, E., Singh, S., Gardner, M., Hajishirzi, H., & Zettlemoyer, L. (2020). Compositional Questions Do Not Necessitate Multi-hop Reasoning. <em>Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL)</em>, 4249–4260.
+        </li>
+        <li>
+            Naik, A., Ravichander, A., Sadeh, N., Rose, C., & Hovy, E. (2018). Stress Test Evaluation for Natural Language Inference Models. <em>Proceedings of the 27th International Conference on Computational Linguistics (COLING)</em>, 2340–2353.
+        </li>
+        <li>
+            Sanwal, M. (2024). Evaluating Large Language Models Using Contrast Sets: An Experimental Approach. <em>Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (ACL 2024)</em>, 90–97. Toronto, Canada. Association for Computational Linguistics.
+        </li>
+        <li>
+            Yang, Z., Qi, P., Zhang, S., Bengio, Y., Cohen, W., Salakhutdinov, R., & Manning, C. (2018). HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering. <em>Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, 2369–2380.
+        </li>
+    </ol>
+</section>
+
+
+
+<!-- FOOTER (OPTIONAL) -->
+<footer>
+    <p>&copy; 2024 Stan Ivaciov. All rights reserved.</p>
+</footer>
