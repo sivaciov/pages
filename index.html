@@ -1,11 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Hello, World!</title>
+  <meta charset="UTF-8" />
+  <title>Resume - Stan Ivaciov</title>
+  <style>
+    /* RESET / BASE STYLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body {
+      background-color: #222; /* Dark background */
+      color: #fff;           /* White text by default */
+      line-height: 1.5;
+      font-size: 16px;
+      padding: 20px;
+    }
+
+    /* HEADER */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-size: 36px;
+      color: #ff8c00; /* Orange color for the name */
+      margin-bottom: 10px;
+    }
+    header .contact-info {
+      font-size: 16px;
+      color: #ccc; /* Lighter shade of gray */
+    }
+    header .contact-info p {
+      margin: 5px 0;
+    }
+
+    /* SECTION HEADINGS */
+    .section-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      color: #ff8c00; /* Same orange color for headings */
+      border-bottom: 1px solid #ff8c00;
+      padding-bottom: 5px;
+    }
+
+    /* CONTENT SECTIONS */
+    .summary,
+    .technologies,
+    .experience,
+    .education {
+      margin-bottom: 20px;
+    }
+    .summary p {
+      margin-bottom: 10px;
+    }
+
+    /* TECHNOLOGIES LIST */
+    .tech-list {
+      margin-left: 20px;
+      list-style-type: disc;
+    }
+    .tech-list li {
+      margin-bottom: 5px;
+    }
+    
+    /* EXPERIENCE SECTION */
+    .job {
+      margin-bottom: 20px;
+    }
+    .job h3 {
+      font-size: 18px;
+      color: #ff8c00;
+      margin-bottom: 5px;
+    }
+    .job h4 {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+    .job ul {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+    .job ul li {
+      margin-bottom: 5px;
+    }
+
+    /* EDUCATION SECTION */
+    .education-entry {
+      margin-bottom: 15px;
+    }
+    .education-entry h4 {
+      font-size: 16px;
+      color: #ff8c00;
+      margin-bottom: 5px;
+    }
+    .education-entry p {
+      color: #ccc;
+    }
+
+    /* FOOTER (OPTIONAL) */
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>Welcome to my GitHub Pages site.</p>
+
+  <!-- HEADER -->
+  <header>
+    <h1>STAN IVACIOV</h1>
+    <div class="contact-info">
+      <p>(813) 460-0195</p>
+      <p><a href="mailto:sivaciov@gmail.com" style="color: #ccc; text-decoration: none;">sivaciov@gmail.com</a></p>
+      <p>Tampa, FL</p>
+    </div>
+  </header>
+
+  <!-- SUMMARY -->
+  <section class="summary">
+    <h2 class="section-title">Summary</h2>
+    <p>
+      Visionary Technology Leader with over 16 years of hands-on experience driving innovation, digital transformation, and business growth. Skilled in delivering scalable, high-impact solutions that streamline operations, enhance system performance, and exceed client expectations. Proven track record of leading global engineering teams, fostering collaboration, and driving strategic initiatives to achieve measurable business outcomes, including improved system reliability, reduced operational costs, and accelerated delivery timelines. 
+    </p>
+    <p>
+      Expert in Agile methodologies, modern technology stacks, and emerging trends such as AI/ML and cloud computing. Passionate about cultivating high-performing teams and leveraging technology to deliver intuitive, forward-thinking solutions that align with organizational goals and propel success.
+    </p>
+  </section>
+
+  <!-- TECHNOLOGIES -->
+  <section class="technologies">
+    <h2 class="section-title">Technologies</h2>
+    <ul class="tech-list">
+      <li><strong>Languages:</strong> Java, JavaScript, Python, Swift, Kotlin, TypeScript, SQL, HTML/CSS</li>
+      <li><strong>Frameworks:</strong> React, Django, Spring Boot</li>
+      <li><strong>Infrastructure:</strong> Kafka, Kubernetes (k8s), Docker, OpenShift, Tomcat, WebSphere</li>
+      <li><strong>Databases:</strong> Oracle, MongoDB, Redis, GraphQL, PostgreSQL</li>
+      <li><strong>Tools & DevOps:</strong> Git, Jenkins, Helm, Maven, Gradle, CI/CD Pipelines, Automated Testing, IntelliJ</li>
+    </ul>
+  </section>
+
+  <!-- PROFESSIONAL EXPERIENCE -->
+  <section class="experience">
+    <h2 class="section-title">Professional Experience</h2>
+
+    <!-- Citi (SVP, Software Engineering) -->
+    <div class="job">
+      <h3>Citi, Tampa, FL</h3>
+      <h4>SVP, Software Engineering | April 2018 – Present</h4>
+      <ul>
+        <li>Led cross-functional teams of software developers and DevOps engineers to design, modernize, and maintain Document Management Solutions with GenAI capabilities.</li>
+        <li>Directed a high-performing team specializing in Java, Python, React, and custom-trained LLMs, aligning execution with strategic goals to boost productivity.</li>
+        <li>Implemented and optimized CI/CD pipelines, infrastructure automation, and deployment workflows, improving efficiency and reducing release times.</li>
+        <li>Enhanced product scalability, reliability, and performance, increasing system throughput by 130% and reducing latency by 200% through infrastructure and stack optimizations.</li>
+        <li>Designed GenAI-driven Extraction and Classification features, improving document processing accuracy and automating workflows.</li>
+        <li>Established robust testing strategies (Unit, Functional, UI Automation, Regression) and advanced site reliability practices.</li>
+        <li>Optimized resource allocation and budget planning, while maintaining proactive incident management practices.</li>
+      </ul>
+    </div>
+
+    <!-- Accusoft (VP, Software Engineering) -->
+    <div class="job">
+      <h3>Accusoft, Tampa, FL</h3>
+      <h4>VP, Software Engineering | March 2016 – April 2018</h4>
+      <ul>
+        <li>Managed remote and local development teams across front-end, middle-tier, and back-end development for OCR SDKs and client-facing products.</li>
+        <li>Utilized Agile methodologies to deliver complex projects on time while aligning with business goals.</li>
+        <li>Oversaw multiple high-complexity projects in parallel, using two-week Scrum sprints to ensure quality and efficiency.</li>
+        <li>Identified risks proactively and collaborated with stakeholders on deliverables, timelines, and mitigation strategies.</li>
+        <li>Improved team clarity and workflows by facilitating Scrum processes and defining roles and responsibilities.</li>
+        <li>Provided hands-on guidance on coding standards and technical decision-making to ensure innovation and maintain code quality.</li>
+      </ul>
+    </div>
+
+    <!-- Syniverse (Senior Product Manager) -->
+    <div class="job">
+      <h3>Syniverse, Tampa, FL</h3>
+      <h4>Senior Product Manager | September 2015 – March 2016</h4>
+      <ul>
+        <li>Led the successful launch of the Syniverse Developer Community, a self-service web portal for messaging and customer identity APIs.</li>
+        <li>Developed a comprehensive go-to-market strategy to increase engagement with developer communities.</li>
+        <li>Designed and delivered the developer.syniverse.com portal to meet industry needs and enhance user experience.</li>
+        <li>Defined project budgets, annual goals, and rollout objectives, ensuring milestones were met and measured.</li>
+        <li>Partnered with internal teams and stakeholders to integrate data and align technical and business objectives.</li>
+        <li>Maintained transparency through regular stakeholder updates, mitigating risks and ensuring alignment.</li>
+      </ul>
+    </div>
+
+    <!-- FAST Graphs (VP, Software Development) -->
+    <div class="job">
+      <h3>FAST Graphs, Tampa, FL</h3>
+      <h4>VP, Software Development | September 2014 – September 2015</h4>
+      <ul>
+        <li>Oversaw development and innovation for fastgraphs.com, a $500K equity research platform with over 3,000 customers.</li>
+        <li>Managed and mentored a team of full-stack developers, delivering projects on time and at a high level of quality.</li>
+        <li>Translated stakeholder requirements into actionable development roadmaps focusing on user satisfaction.</li>
+        <li>Researched and implemented cutting-edge technologies to improve platform capabilities and performance.</li>
+        <li>Launched new features with an emphasis on balancing speed-to-market, reliability, and innovation.</li>
+      </ul>
+    </div>
+
+    <!-- Citi (Lead Software Developer) -->
+    <div class="job">
+      <h3>Citi, Jersey City, NJ</h3>
+      <h4>Lead Software Developer | Team Lead | July 2012 – September 2014</h4>
+      <ul>
+        <li>Led onshore and offshore teams to enhance and maintain a CMS supporting 500 authors and 300,000 global users.</li>
+        <li>Implemented advanced NLP and search capabilities, boosting equity research efficiency.</li>
+        <li>Modernized data platforms by migrating 500,000+ documents to NoSQL and moving 500GB of readership data to Oracle.</li>
+        <li>Facilitated Agile adoption for distributed teams, improving delivery speed and stakeholder visibility.</li>
+        <li>Drove adoption of a new CMS framework across the IT organization for better consistency and scalability.</li>
+      </ul>
+    </div>
+
+    <!-- Verizon Wireless (Senior Software Developer) -->
+    <div class="job">
+      <h3>Verizon Wireless, Warren, NJ</h3>
+      <h4>Senior Software Developer | February 2009 – July 2012</h4>
+      <ul>
+        <li>Oversaw critical applications, achieving $12MM cost savings by enabling electronic communication channels.</li>
+        <li>Filed Patent #8,296,326 for an XML processing technique that improved system efficiency.</li>
+        <li>Developed the Confirmation Letters System, ensuring operational stability and timely updates.</li>
+        <li>Created user manuals and workflow diagrams to increase system adoption.</li>
+        <li>Upgraded Document Viewer to the latest IBM ODWEK version, enhancing performance and reliability.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section class="education">
+    <h2 class="section-title">Education</h2>
+    <div class="education-entry">
+      <h4>Master of Science in Computer Science (Expected 2025)</h4>
+      <p>University of Texas at Austin, Austin, TX</p>
+    </div>
+    <div class="education-entry">
+      <h4>MBA in Finance and Business Strategy (2014)</h4>
+      <p>Rutgers University, New Brunswick, NJ</p>
+    </div>
+    <div class="education-entry">
+      <h4>Bachelor of Science in Computer Science (2009)</h4>
+      <p>Rutgers University, New Brunswick, NJ</p>
+    </div>
+  </section>
+
+  <!-- FOOTER (OPTIONAL) -->
+  <footer>
+    <p>&copy; 2024 Stan Ivaciov. All rights reserved.</p>
+  </footer>
 </body>
 </html>
